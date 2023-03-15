@@ -39,13 +39,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     private boolean              mIsColorSelected = false;
     private Mat                  mRgba;
-    //private Scalar               mBlobColorRgba;
-    //private Scalar               mBlobColorHsv;
-    //private ColorBlobDetector    mDetector;
     private DNN                  mDNN;
-    //private Mat                  mSpectrum;
-    //private Size                 SPECTRUM_SIZE;
-    //private Scalar               CONTOUR_COLOR;
+    private SLAM                  mSLAM;
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
@@ -142,14 +137,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     public void onCameraViewStarted(int width, int height) {
         mRgba = new Mat(height, width, CvType.CV_8UC4);
-        //mDetector = new ColorBlobDetector();
+
 
         mDNN = new DNN(MainActivity.this);
-        //mSpectrum = new Mat();
-        //mBlobColorRgba = new Scalar(255);
-        //mBlobColorHsv = new Scalar(255);
-        //SPECTRUM_SIZE = new Size(200, 64);
-        //CONTOUR_COLOR = new Scalar(255,0,0,255);
+
+        mSLAM = new SLAM(MainActivity.this);
     }
 
     public void onCameraViewStopped() {
@@ -175,16 +167,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mRgba = inputFrame.rgba();
         Imgproc.cvtColor(mRgba, mRgba, Imgproc.COLOR_RGBA2RGB);
 
-        mRgba = DNN.process(mRgba);
+        //mRgba = DNN.process(mRgba);
+        mRgba = SLAM.process(mRgba);
 
         return mRgba;
     }
 
-    //private Scalar converScalarHsv2Rgba(Scalar hsvColor) {
-    //    Mat pointMatRgba = new Mat();
-    //    Mat pointMatHsv = new Mat(1, 1, CvType.CV_8UC3, hsvColor);
-    //    Imgproc.cvtColor(pointMatHsv, pointMatRgba, Imgproc.COLOR_HSV2RGB_FULL, 4);
-//
-    //    return new Scalar(pointMatRgba.get(0, 0));
-    //}
 }

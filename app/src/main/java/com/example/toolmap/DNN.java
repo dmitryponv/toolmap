@@ -135,15 +135,9 @@ public class DNN {
         lock.unlock();
     }
     public static Mat process(Mat img){
-        //  load the COCO class labels our YOLO model was trained on
-        //Mat img = Imgcodecs.imread("test.jpg");
-
         DetectionModel model = new DetectionModel(net);
         model.setInputParams(1 / 255.0, new Size(416, 416), new Scalar(0), true);
 
-        //MatOfInt classIds = new MatOfInt();
-        //MatOfFloat scores = new MatOfFloat();
-        //MatOfRect boxes = new MatOfRect();
         lock.lock();
         model.detect(img, classIds, scores, boxes, 0.3f, 0.2f);
 
@@ -154,7 +148,6 @@ public class DNN {
             int classId = (int) classIds.get(i, 0)[0];
             double score = scores.get(i, 0)[0];
             String text = String.format("%s: %.2f", classes.get(classId), score);
-            //String text = String.format("%d: %.2f", classId, score);
             Imgproc.putText(img, text, new Point(box.x, box.y - 5),
                     Imgproc.FONT_HERSHEY_SIMPLEX, 1, new Scalar(0, 255, 0), 2);
 
