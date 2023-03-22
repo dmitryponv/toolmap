@@ -57,7 +57,7 @@ public class DNN {
         }
     }
 
-    public DNN(Context m_context){
+    public static void SetDNN(Context m_context){
 
         AssetManager assetManager = m_context.getAssets();
         try {

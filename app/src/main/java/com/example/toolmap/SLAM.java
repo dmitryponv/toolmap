@@ -64,7 +64,7 @@ public class SLAM {
         }
     }
 
-    public SLAM(Context m_context){
+    public static void SetSLAM(Context m_context){
         //System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
@@ -107,6 +107,7 @@ public class SLAM {
             detector.detect(img, keypoints2, new Mat());
             //switch_image = true;
             detector.detectAndCompute(img, new Mat(), keypoints2, descriptors2);
+            return img;
         }
         else if(frame==22)
         {
@@ -128,7 +129,8 @@ public class SLAM {
         matcher.knnMatch(descriptors1, descriptors2, knnMatches1, 2);
 
         List<MatOfDMatch> knnMatches2 = new ArrayList<>();
-        matcher.knnMatch(descriptors1, descriptors3, knnMatches2, 2)
+        matcher.knnMatch(descriptors1, descriptors3, knnMatches2, 2);
+
         //-- Filter matches using the Lowe's ratio test
         float ratioThresh = 0.7f;
         List<DMatch> listOfGoodMatches1 = new ArrayList<>();
@@ -150,39 +152,31 @@ public class SLAM {
             }
         }
 
-        //List<DMatch> matchesList = matches.toList();
         List<KeyPoint> kp1List = keypoints1.toList();
         List<KeyPoint> kp2List = keypoints2.toList();
         List<KeyPoint> kp3List = keypoints3.toList();
 
-        //-- Filter matches using the Lowe's ratio test
-        for (int i = 0; i < knnMatches.size(); i++) {
-            if (knnMatches.get(i).rows() > 1) {
-                DMatch[] matches = knnMatches.get(i).toArray();
-                if (matches[0].distance < ratioThresh * matches[1].distance) {
-                    listOfGoodMatches.add(matches[0]);
+        System.out.println("List for frame: " + frame);
+        for(DMatch match1 : listOfGoodMatches1)
+        {
+            KeyPoint p1_1 = kp1List.get(match1.queryIdx);
+            KeyPoint p2_1 = kp2List.get(match1.trainIdx);
+            for(DMatch match2 : listOfGoodMatches2) {
+                KeyPoint p1_2 = kp1List.get(match2.queryIdx);
+                KeyPoint p3_2 = kp3List.get(match2.trainIdx);
+                if(p1_2 == p1_1)
+                {
+                    System.out.println(p1_1.pt.x + "\t" + p2_1.pt.x + "\t" + p3_2.pt.x + "\t" + p1_1.pt.y + "\t" + p2_1.pt.y + "\t" + p3_2.pt.y);
                 }
             }
         }
-
-        System.out.println("List for frame: " + frame);
-        for(DMatch match : listOfGoodMatches)
-        {
-            //KeyPoint p1 = switch_image?  kp1List.get(match.trainIdx) : kp2List.get(match.trainIdx);
-            //KeyPoint p2 = switch_image?  kp2List.get(match.queryIdx) : kp1List.get(match.queryIdx);
-            KeyPoint p1 = kp2List.get(match.trainIdx);
-            KeyPoint p2 = kp1List.get(match.queryIdx);
-
-            System.out.println(p1.pt.x + "\t" + p1.pt.y + "\t" + p2.pt.x + "\t" + p2.pt.y);
-        }
         //DescriptorExtractor descriptor = DescriptorExtractor.create(DescriptorExtractor.ORB);
 
-
-        Mat output=new Mat();
-        Features2d.drawKeypoints(img, keypoints1,output );
+        //Mat output=new Mat();
+        //Features2d.drawKeypoints(img, keypoints1,output );
 
         lock.unlock();
 
-        return output;
+        return img;
     }
 }

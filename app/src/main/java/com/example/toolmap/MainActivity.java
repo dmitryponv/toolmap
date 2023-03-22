@@ -20,6 +20,7 @@ import org.opencv.imgproc.Imgproc;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -41,6 +42,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Mat                  mRgba;
     private DNN                  mDNN;
     private SLAM                  mSLAM;
+    //private Motion                  mMTN;
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
@@ -106,6 +108,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.color_blob_detection_activity_surface_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+
+        //mMTN = new Motion();
+        Intent myIntent = new Intent(MainActivity.this, Motion.class);
+        //myIntent.putExtra("key", value); //Optional parameters
+        MainActivity.this.startActivity(myIntent);
     }
 
     @Override
@@ -139,9 +146,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mRgba = new Mat(height, width, CvType.CV_8UC4);
 
 
-        mDNN = new DNN(MainActivity.this);
-
-        mSLAM = new SLAM(MainActivity.this);
+        DNN.SetDNN(MainActivity.this);
+        //Motion.SetMotion(MainActivity.this);
+        //mMTN = new Motion();
     }
 
     public void onCameraViewStopped() {
@@ -168,7 +175,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Imgproc.cvtColor(mRgba, mRgba, Imgproc.COLOR_RGBA2RGB);
 
         //mRgba = DNN.process(mRgba);
-        mRgba = SLAM.process(mRgba);
+        //mRgba = SLAM.process(mRgba);
+        mRgba = Motion.process(mRgba);
+
 
         return mRgba;
     }
